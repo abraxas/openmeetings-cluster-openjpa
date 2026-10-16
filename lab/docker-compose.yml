@@ -1,0 +1,55 @@
+name: om-g11-cluster
+
+networks:
+  default:
+    ipam:
+      config:
+        - subnet: 172.28.91.0/24
+
+services:
+  db:
+    image: mariadb:11.4
+    platform: linux/amd64
+    environment:
+      MYSQL_DATABASE: openmeetings
+      MYSQL_USER: om_admin
+      MYSQL_PASSWORD: "12345"
+      MYSQL_ROOT_PASSWORD: "12345"
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 20s
+    restart: "no"
+
+  om:
+    build: .
+    image: om-g11-cluster:min-9.1.0
+    platform: linux/amd64
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      OM_DB_TYPE: mysql
+      OM_DB_HOST: db
+      OM_DB_PORT: "3306"
+      OM_DB_NAME: openmeetings
+      OM_DB_USER: om_admin
+      OM_DB_PASS: "12345"
+      OM_USER: om_admin
+      OM_PASS: "1Q2w3e4r5t^y"
+      OM_KURENTO_WS_URL: "ws://127.0.0.1:8888/kurento"
+      ENABLE_CLUSTER: "${ENABLE_CLUSTER:-0}"
+      JAVA_HOME: /usr/lib/jvm/java-21-openjdk-amd64
+      JRE_HOME: /usr/lib/jvm/java-21-openjdk-amd64
+    ports:
+      - "127.0.0.1:18161:5443"
+      - "127.0.0.1:18162:5636"
+    mem_limit: 2g
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,nodev,size=256m
+    restart: "no"
