@@ -13,6 +13,10 @@
   &nbsp;·&nbsp;
   <a href="https://github.com/abraxas/openmeetings-cluster-openjpa">openmeetings-cluster-openjpa</a>
 </p>
+<p align="center">
+  Write-up: <a href="https://abraxaslabs.tech/research/openmeetings-9-1-0-leftovers"><strong>https://abraxaslabs.tech/research/openmeetings-9-1-0-leftovers</strong></a>
+</p>
+
 
 # openmeetings-cluster-openjpa
 
